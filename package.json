@@ -1,0 +1,14 @@
+{
+  "name": "test-dependabot-bun-updater",
+  "module": "index.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.6.2"
+  },
+  "dependencies": {
+    "@biomejs/biome": "1.9.0"
+  }
+}
