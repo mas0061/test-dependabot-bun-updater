@@ -1,0 +1,61 @@
+name: PR Bun updater
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+  repository-projects: read
+
+jobs:
+  update-bun:
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'bun-updated') && contains(github.event.pull_request.labels.*.name, 'dependencies') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate GitHub Apps token
+        id: app-token
+        uses: actions/create-github-app-token@v1.11.0
+        with:
+          app_id: ${{ secrets.APP_ID }}
+          private_key: ${{ secrets.PRIVATE_KEY }}
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          ref: ${{ github.head_ref }}
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v45.0.2
+      - name: Setup Bun
+        if: contains(steps.changed-files.outputs.all_changed_files, 'package.json')
+        uses: oven-sh/setup-bun@v2.0.1
+        with:
+          bun-version: latest
+      - name: Update bun
+        if: contains(steps.changed-files.outputs.all_changed_files, 'package.json')
+        run: bun update
+      - name: repository push
+        if: contains(steps.changed-files.outputs.all_changed_files, 'package.json')
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add .
+          if $(git diff --quiet --exit-code --cached); then
+            echo "No changes in the commit"
+            exit 0
+          fi
+          git status
+          git commit -m "build: update bun from ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          git push
+      - name: add label to PR
+        if: contains(steps.changed-files.outputs.all_changed_files, 'package.json')
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: gh pr edit "${PR_NUMBER}" --add-label "bun-updated"
