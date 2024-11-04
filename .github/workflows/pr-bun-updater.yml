@@ -36,7 +36,7 @@ jobs:
         if: contains(steps.changed-files.outputs.all_changed_files, 'package.json')
         uses: oven-sh/setup-bun@v2.0.1
         with:
-          bun-version: 1.1.x
+          bun-version: latest
       - name: Update bun
         if: contains(steps.changed-files.outputs.all_changed_files, 'package.json')
         run: bun update
