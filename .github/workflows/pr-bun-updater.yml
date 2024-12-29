@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   update-bun:
-    if: ${{ !contains(github.event.pull_request.labels.*.name, 'bun-updated') && contains(github.event.pull_request.labels.*.name, 'dependencies') }}
+    if: ${{ github.actor == 'dependabot[bot]' && !contains(github.event.pull_request.labels.*.name, 'bun-updated') }}
     runs-on: ubuntu-latest
     steps:
       - name: Generate GitHub Apps token
