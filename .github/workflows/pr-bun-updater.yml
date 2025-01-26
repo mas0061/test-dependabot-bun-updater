@@ -31,7 +31,7 @@ jobs:
           ref: ${{ github.head_ref }}
       - name: Get changed files
         id: changed-files
-        uses: tj-actions/changed-files@v45.0.2
+        uses: tj-actions/changed-files@v45.0.6
       - name: Setup Bun
         if: contains(steps.changed-files.outputs.all_changed_files, 'package.json')
         uses: oven-sh/setup-bun@v2.0.1
