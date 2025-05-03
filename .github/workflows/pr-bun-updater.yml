@@ -35,7 +35,7 @@ jobs:
         uses: tj-actions/changed-files@v46.0.5
       - name: Setup Bun
         if: contains(steps.changed-files.outputs.all_changed_files, 'package.json')
-        uses: oven-sh/setup-bun@v2.0.1
+        uses: oven-sh/setup-bun@v2.0.2
         with:
           bun-version: latest
       - name: Update bun
